@@ -1,11 +1,128 @@
 import { Router } from 'express';
 import { water_productsController } from '../controller/water_products.controller.js';
+
 const router = Router();
 
-router.route('/').get(water_productsController.find);
-router.route('/:id').get(water_productsController.findOne);
-router.route('/:id').patch(water_productsController.update);
-router.route('/:id').delete(water_productsController.delete);
-router.route('/').post(water_productsController.create);
+/**
+ * @swagger
+ * tags:
+ *   name: Water Products
+ *   description: Water product management endpoints
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     WaterProduct:
+ *       type: object
+ *       required:
+ *         - name
+ *         - price
+ *       properties:
+ *         name:
+ *           type: string
+ *         price:
+ *           type: number
+ *         description:
+ *           type: string
+ *         volume:
+ *           type: number
+ */
+
+/**
+ * @swagger
+ * /water_products:
+ *   get:
+ *     summary: Get all water products
+ *     tags: [Water Products]
+ *     responses:
+ *       200:
+ *         description: List of all water products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/WaterProduct'
+ *   post:
+ *     summary: Create new water product
+ *     tags: [Water Products]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/WaterProduct'
+ *     responses:
+ *       201:
+ *         description: Water product created successfully
+ *       400:
+ *         description: Invalid input
+ */
+
+/**
+ * @swagger
+ * /water_products/{id}:
+ *   get:
+ *     summary: Get water product by ID
+ *     tags: [Water Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Water product found
+ *       404:
+ *         description: Water product not found
+ *   patch:
+ *     summary: Update water product
+ *     tags: [Water Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/WaterProduct'
+ *     responses:
+ *       200:
+ *         description: Water product updated
+ *       404:
+ *         description: Water product not found
+ *   delete:
+ *     summary: Delete water product
+ *     tags: [Water Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Water product deleted
+ *       404:
+ *         description: Water product not found
+ */
+
+router
+  .route('/')
+  .get(water_productsController.find)
+  .post(water_productsController.create);
+
+router
+  .route('/:id')
+  .get(water_productsController.findOne)
+  .patch(water_productsController.update)
+  .delete(water_productsController.delete);
 
 export { router as water_productsRouter };

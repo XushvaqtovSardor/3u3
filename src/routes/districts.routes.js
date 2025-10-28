@@ -1,11 +1,119 @@
 import { Router } from 'express';
 import { districtsController } from '../controller/districts.controller.js';
+
 const router = Router();
 
-router.route('/').get(districtsController.find);
-router.route('/:id').get(districtsController.findOne);
-router.route('/:id').patch(districtsController.update);
-router.route('/:id').delete(districtsController.delete);
-router.route('/').post(districtsController.create);
+/**
+ * @swagger
+ * tags:
+ *   name: Districts
+ *   description: District management endpoints
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     District:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ */
+
+/**
+ * @swagger
+ * /districts:
+ *   get:
+ *     summary: Get all districts
+ *     tags: [Districts]
+ *     responses:
+ *       200:
+ *         description: List of all districts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/District'
+ *   post:
+ *     summary: Create new district
+ *     tags: [Districts]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/District'
+ *     responses:
+ *       201:
+ *         description: District created successfully
+ *       400:
+ *         description: Invalid input
+ */
+
+/**
+ * @swagger
+ * /districts/{id}:
+ *   get:
+ *     summary: Get district by ID
+ *     tags: [Districts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: District found
+ *       404:
+ *         description: District not found
+ *   patch:
+ *     summary: Update district
+ *     tags: [Districts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/District'
+ *     responses:
+ *       200:
+ *         description: District updated
+ *       404:
+ *         description: District not found
+ *   delete:
+ *     summary: Delete district
+ *     tags: [Districts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: District deleted
+ *       404:
+ *         description: District not found
+ */
+
+router
+  .route('/')
+  .get(districtsController.find)
+  .post(districtsController.create);
+
+router
+  .route('/:id')
+  .get(districtsController.findOne)
+  .patch(districtsController.update)
+  .delete(districtsController.delete);
 
 export { router as districtsRouter };
