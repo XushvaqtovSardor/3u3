@@ -1,4 +1,4 @@
-import { Delivery_stuffModel } from "../model/delivery_stuff.model.js";
+import { Delivery_stuffModel } from '../model/delivery_stuff.model.js';
 
 export const delivery_stuffController = {
   find: async (req, res, next) => {

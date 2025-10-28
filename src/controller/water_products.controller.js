@@ -1,4 +1,4 @@
-import { Water_productModel } from "../model/water_products.model.js";
+import { Water_productModel } from '../model/water_products.model.js';
 
 export const water_productsController = {
   find: async (req, res, next) => {

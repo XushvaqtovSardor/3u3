@@ -1,4 +1,4 @@
-import { DistrictsModel } from "../model/districts.model.js";
+import { DistrictsModel } from '../model/districts.model.js';
 
 export const districtsController = {
   find: async (req, res, next) => {

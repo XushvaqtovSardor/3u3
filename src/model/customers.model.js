@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, Schema } from 'mongoose';
 const customersSchema = new Schema({
   name: {
     type: String,
@@ -10,4 +10,4 @@ const customersSchema = new Schema({
     trim: true,
   },
 });
-export const CustomersModel = model("customers", customersSchema);
+export const CustomersModel = model('customers', customersSchema);

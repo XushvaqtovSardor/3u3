@@ -1,3 +1,1 @@
-export function pagenation(limit=10,page=1){
-    
-}
+export function pagenation(limit = 10, page = 1) {}

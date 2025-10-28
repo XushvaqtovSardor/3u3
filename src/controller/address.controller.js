@@ -1,9 +1,9 @@
-import { AddressModel } from "../model/address.model.js";
+import { AddressModel } from '../model/address.model.js';
 
 export const addressController = {
   find: async (req, res, next) => {
     try {
-      const adress = await AddressModel.find({}).populate("district_id").exec()
+      const adress = await AddressModel.find({}).populate('district_id').exec();
       res.send(adress);
     } catch (err) {
       next(err);
@@ -41,7 +41,7 @@ export const addressController = {
     try {
       const { id } = req.params;
       const result = await AddressModel.deleteOne({ _id: id });
-      res.send("user ok");
+      res.send(result);
     } catch (err) {
       next(err);
     }

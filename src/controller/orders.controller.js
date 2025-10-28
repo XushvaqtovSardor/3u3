@@ -1,4 +1,4 @@
-import { ordersModel } from "../model/orders.model.js";
+import { ordersModel } from '../model/orders.model.js';
 
 export const ordersController = {
   find: async (req, res, next) => {
