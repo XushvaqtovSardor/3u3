@@ -9,5 +9,18 @@ const customersSchema = new Schema({
     type: String,
     trim: true,
   },
+  password: {
+    type: String,
+    required: true,
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'delivery_staff', 'customer'],
+    default: 'customer',
+  },
+  refreshToken: {
+    type: String,
+    default: null,
+  },
 });
 export const CustomersModel = model('customers', customersSchema);

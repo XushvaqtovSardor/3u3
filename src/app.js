@@ -1,3 +1,4 @@
+import nodemailer from 'nodemailer';
 import 'dotenv/config';
 import express from 'express';
 import morgan from 'morgan';
@@ -5,6 +6,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { dbConnect } from './config/index.js';
 import MainRouter from './routes/index.js';
+import errorHandler from './helpers/errorHandler.js';
 
 const app = express();
 const PORT = 4000;
@@ -23,18 +25,6 @@ const swaggerOptions = {
         description: 'Development server',
       },
     ],
-    components: {
-      schemas: {
-        Error: {
-          type: 'object',
-          properties: {
-            message: {
-              type: 'string',
-            },
-          },
-        },
-      },
-    },
   },
   apis: ['./src/routes/*.js'],
 };
@@ -56,7 +46,28 @@ app.use((req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+app.use(errorHandler);
+
+app.listen(PORT, async () => {
   console.log(`Server: http://localhost:${PORT}`);
   console.log(`API Docs: http://localhost:${PORT}/api-docs`);
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.Google_Mail,
+        pass: process.env.GOOOGLE_APP_PASSWORD,
+      },
+    });
+    const info = await transporter.sendMail({
+      from: `"Xushvaqtov Sardor" <${process.env.Google_Mail}>`,
+      to: process.env.ADMIN_EMAIL || process.env.Google_Mail,
+      subject: 'Server Started',
+      html: '<b>Hello World! Server is running.</b>',
+    });
+    console.log('Message sent:', info.messageId);
+  } catch (error) {
+    console.error('Email error:', error.message);
+  }
 });

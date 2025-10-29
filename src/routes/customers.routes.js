@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { customersController } from '../controller/customers.controller.js';
+import { authGuard, selfGuard, roleGuard } from '../helpers/auth.js';
 
 const router = Router();
 
@@ -111,13 +112,13 @@ const router = Router();
 
 router
   .route('/')
-  .get(customersController.find)
+  .get(authGuard, roleGuard('admin'), customersController.find)
   .post(customersController.create);
 
 router
   .route('/:id')
-  .get(customersController.findOne)
-  .patch(customersController.update)
-  .delete(customersController.delete);
+  .get(authGuard, selfGuard(), customersController.findOne)
+  .patch(authGuard, selfGuard(), customersController.update)
+  .delete(authGuard, roleGuard('admin'), customersController.delete);
 
 export { router as customersRouter };

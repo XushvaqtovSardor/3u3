@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { ordersController } from '../controller/orders.controller.js';
+import { authGuard, roleGuard } from '../helpers/auth.js';
 
 const router = Router();
 
@@ -118,12 +119,19 @@ const router = Router();
  *         description: Order not found
  */
 
-router.route('/').get(ordersController.find).post(ordersController.create);
+router
+  .route('/')
+  .get(authGuard, ordersController.find)
+  .post(authGuard, ordersController.create);
 
 router
   .route('/:id')
-  .get(ordersController.findOne)
-  .patch(ordersController.update)
-  .delete(ordersController.delete);
+  .get(authGuard, ordersController.findOne)
+  .patch(
+    authGuard,
+    roleGuard('admin', 'delivery_staff'),
+    ordersController.update
+  )
+  .delete(authGuard, roleGuard('admin'), ordersController.delete);
 
 export { router as ordersRouter };
