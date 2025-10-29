@@ -1,11 +1,127 @@
 import { Router } from 'express';
 import { paymentsController } from '../controller/payments.controller.js';
+
 const router = Router();
 
-router.route('/').get(paymentsController.find);
-router.route('/:id').get(paymentsController.findOne);
-router.route('/:id').patch(paymentsController.update);
-router.route('/:id').delete(paymentsController.delete);
-router.route('/').post(paymentsController.create);
+/**
+ * @swagger
+ * tags:
+ *   name: Payments
+ *   description: Payment management endpoints
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Payment:
+ *       type: object
+ *       required:
+ *         - amount
+ *       properties:
+ *         order_id:
+ *           type: string
+ *           format: objectId
+ *         payment_date:
+ *           type: string
+ *           format: date-time
+ *         amount:
+ *           type: number
+ *         method:
+ *           type: string
+ *           enum: [pending, paid]
+ */
+
+/**
+ * @swagger
+ * /payments:
+ *   get:
+ *     summary: Get all payments
+ *     tags: [Payments]
+ *     responses:
+ *       200:
+ *         description: List of all payments
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Payment'
+ *   post:
+ *     summary: Create new payment
+ *     tags: [Payments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Payment'
+ *     responses:
+ *       201:
+ *         description: Payment created successfully
+ *       400:
+ *         description: Invalid input
+ */
+
+/**
+ * @swagger
+ * /payments/{id}:
+ *   get:
+ *     summary: Get payment by ID
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Payment found
+ *       404:
+ *         description: Payment not found
+ *   patch:
+ *     summary: Update payment
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Payment'
+ *     responses:
+ *       200:
+ *         description: Payment updated
+ *       404:
+ *         description: Payment not found
+ *   delete:
+ *     summary: Delete payment
+ *     tags: [Payments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Payment deleted
+ *       404:
+ *         description: Payment not found
+ */
+
+router.route('/').get(paymentsController.find).post(paymentsController.create);
+
+router
+  .route('/:id')
+  .get(paymentsController.findOne)
+  .patch(paymentsController.update)
+  .delete(paymentsController.delete);
 
 export { router as paymentsRouter };
