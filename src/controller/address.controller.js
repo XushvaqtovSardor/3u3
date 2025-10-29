@@ -3,8 +3,21 @@ import { AddressModel } from '../model/address.model.js';
 export const addressController = {
   find: async (req, res, next) => {
     try {
-      const adress = await AddressModel.find({}).populate('district_id').exec();
-      res.send(adress);
+      const page = Math.max(1, parseInt(req.query.page || '1'));
+      const limit = Math.max(1, parseInt(req.query.limit || '10'));
+      const skip = (page - 1) * limit;
+      const query = {};
+      if (req.user && req.user.role === 'customer')
+        query.customer_id = req.user.id;
+      const [items, total] = await Promise.all([
+        AddressModel.find(query)
+          .populate('district_id')
+          .skip(skip)
+          .limit(limit)
+          .lean(),
+        AddressModel.countDocuments(query),
+      ]);
+      res.json({ data: items, total, page, limit });
     } catch (err) {
       next(err);
     }
@@ -12,8 +25,9 @@ export const addressController = {
   findOne: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const adress = await AddressModel.find({ _id: id });
-      res.send(adress);
+      const address = await AddressModel.findById(id).lean();
+      if (!address) return res.status(404).json({ message: 'Not found' });
+      res.json(address);
     } catch (err) {
       next(err);
     }
@@ -22,7 +36,7 @@ export const addressController = {
     try {
       const address = req.body;
       const newAddress = await AddressModel.create(address);
-      res.send(newAddress);
+      res.status(201).json(newAddress);
     } catch (err) {
       next(err);
     }
@@ -31,8 +45,8 @@ export const addressController = {
     try {
       const { id } = req.params;
       const data = req.body;
-      const newAddress = await AddressModel.updateOne({ _id: id }, data);
-      res.send(newAddress);
+      const updated = await AddressModel.updateOne({ _id: id }, data);
+      res.json(updated);
     } catch (err) {
       next(err);
     }
@@ -41,7 +55,7 @@ export const addressController = {
     try {
       const { id } = req.params;
       const result = await AddressModel.deleteOne({ _id: id });
-      res.send(result);
+      res.json(result);
     } catch (err) {
       next(err);
     }

@@ -3,8 +3,14 @@ import { PaymentsModel } from '../model/payments.model.js';
 export const paymentsController = {
   find: async (req, res, next) => {
     try {
-      const payments = await PaymentsModel.find({});
-      res.send(payments);
+      const page = Math.max(1, parseInt(req.query.page || '1'));
+      const limit = Math.max(1, parseInt(req.query.limit || '10'));
+      const skip = (page - 1) * limit;
+      const [items, total] = await Promise.all([
+        PaymentsModel.find({}).skip(skip).limit(limit).lean(),
+        PaymentsModel.countDocuments({}),
+      ]);
+      res.json({ data: items, total, page, limit });
     } catch (err) {
       next(err);
     }
@@ -12,8 +18,9 @@ export const paymentsController = {
   findOne: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const payments = await PaymentsModel.find({ _id: id });
-      res.send(payments);
+      const payment = await PaymentsModel.findById(id).lean();
+      if (!payment) return res.status(404).json({ message: 'Not found' });
+      res.json(payment);
     } catch (err) {
       next(err);
     }
@@ -22,7 +29,7 @@ export const paymentsController = {
     try {
       const payments = req.body;
       const newPayments = await PaymentsModel.create(payments);
-      res.send(newPayments);
+      res.status(201).json(newPayments);
     } catch (err) {
       next(err);
     }
@@ -31,8 +38,8 @@ export const paymentsController = {
     try {
       const { id } = req.params;
       const data = req.body;
-      const newPayments = await PaymentsModel.updateOne({ _id: id }, data);
-      res.send(newPayments);
+      const updated = await PaymentsModel.updateOne({ _id: id }, data);
+      res.json(updated);
     } catch (err) {
       next(err);
     }
@@ -41,7 +48,7 @@ export const paymentsController = {
     try {
       const { id } = req.params;
       const result = await PaymentsModel.deleteOne({ _id: id });
-      res.send(result);
+      res.json(result);
     } catch (err) {
       next(err);
     }

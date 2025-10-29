@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { addressController } from '../controller/address.controller.js';
+import { authGuard, roleGuard } from '../helpers/auth.js';
 
 const router = Router();
 
@@ -119,12 +120,15 @@ const router = Router();
  *         description: Address not found
  */
 
-router.route('/').get(addressController.find).post(addressController.create);
+router
+  .route('/')
+  .get(authGuard, addressController.find)
+  .post(authGuard, addressController.create);
 
 router
   .route('/:id')
-  .get(addressController.findOne)
-  .patch(addressController.update)
-  .delete(addressController.delete);
+  .get(authGuard, addressController.findOne)
+  .patch(authGuard, addressController.update)
+  .delete(authGuard, roleGuard('admin'), addressController.delete);
 
 export { router as addressRouter };

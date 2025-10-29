@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { water_productsController } from '../controller/water_products.controller.js';
+import { authGuard, roleGuard } from '../helpers/auth.js';
 
 const router = Router();
 
@@ -122,7 +123,7 @@ router
 router
   .route('/:id')
   .get(water_productsController.findOne)
-  .patch(water_productsController.update)
-  .delete(water_productsController.delete);
+  .patch(authGuard, roleGuard('admin'), water_productsController.update)
+  .delete(authGuard, roleGuard('admin'), water_productsController.delete);
 
 export { router as water_productsRouter };

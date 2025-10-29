@@ -3,8 +3,18 @@ import { CustomersModel } from '../model/customers.model.js';
 export const customersController = {
   find: async (req, res, next) => {
     try {
-      const customer = await CustomersModel.find({});
-      res.send(customer);
+      const page = Math.max(1, parseInt(req.query.page || '1'));
+      const limit = Math.max(1, parseInt(req.query.limit || '10'));
+      const skip = (page - 1) * limit;
+      const [items, total] = await Promise.all([
+        CustomersModel.find({})
+          .select('-password')
+          .skip(skip)
+          .limit(limit)
+          .lean(),
+        CustomersModel.countDocuments({}),
+      ]);
+      res.json({ data: items, total, page, limit });
     } catch (err) {
       next(err);
     }
@@ -12,8 +22,11 @@ export const customersController = {
   findOne: async (req, res, next) => {
     try {
       const { id } = req.params;
-      const customer = await CustomersModel.find({ _id: id });
-      res.send(customer);
+      const customer = await CustomersModel.findById(id)
+        .select('-password')
+        .lean();
+      if (!customer) return res.status(404).json({ message: 'Not found' });
+      res.json(customer);
     } catch (err) {
       next(err);
     }
@@ -22,7 +35,7 @@ export const customersController = {
     try {
       const customer = req.body;
       const newCustomer = await CustomersModel.create(customer);
-      res.send(newCustomer);
+      res.status(201).json(newCustomer);
     } catch (err) {
       next(err);
     }
@@ -31,8 +44,8 @@ export const customersController = {
     try {
       const { id } = req.params;
       const data = req.body;
-      const newCustomer = await CustomersModel.updateOne({ _id: id }, data);
-      res.send(newCustomer);
+      const updated = await CustomersModel.updateOne({ _id: id }, data);
+      res.json(updated);
     } catch (err) {
       next(err);
     }
@@ -41,7 +54,7 @@ export const customersController = {
     try {
       const { id } = req.params;
       const result = await CustomersModel.deleteOne({ _id: id });
-      res.send(result);
+      res.json(result);
     } catch (err) {
       next(err);
     }

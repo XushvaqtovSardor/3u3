@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { order_itemsController } from '../controller/order_items.controller.js';
+import { authGuard, roleGuard } from '../helpers/auth.js';
 
 const router = Router();
 
@@ -115,13 +116,13 @@ const router = Router();
 
 router
   .route('/')
-  .get(order_itemsController.find)
-  .post(order_itemsController.create);
+  .get(authGuard, order_itemsController.find)
+  .post(authGuard, order_itemsController.create);
 
 router
   .route('/:id')
-  .get(order_itemsController.findOne)
-  .patch(order_itemsController.update)
-  .delete(order_itemsController.delete);
+  .get(authGuard, order_itemsController.findOne)
+  .patch(authGuard, roleGuard('admin'), order_itemsController.update)
+  .delete(authGuard, roleGuard('admin'), order_itemsController.delete);
 
 export { router as order_itemsRouter };

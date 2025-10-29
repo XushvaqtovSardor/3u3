@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { districtsController } from '../controller/districts.controller.js';
+import { authGuard, roleGuard } from '../helpers/auth.js';
 
 const router = Router();
 
@@ -108,12 +109,12 @@ const router = Router();
 router
   .route('/')
   .get(districtsController.find)
-  .post(districtsController.create);
+  .post(authGuard, roleGuard('admin'), districtsController.create);
 
 router
   .route('/:id')
   .get(districtsController.findOne)
-  .patch(districtsController.update)
-  .delete(districtsController.delete);
+  .patch(authGuard, roleGuard('admin'), districtsController.update)
+  .delete(authGuard, roleGuard('admin'), districtsController.delete);
 
 export { router as districtsRouter };

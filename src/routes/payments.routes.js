@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { paymentsController } from '../controller/payments.controller.js';
+import { authGuard, roleGuard } from '../helpers/auth.js';
 
 const router = Router();
 
@@ -116,12 +117,15 @@ const router = Router();
  *         description: Payment not found
  */
 
-router.route('/').get(paymentsController.find).post(paymentsController.create);
+router
+  .route('/')
+  .get(authGuard, paymentsController.find)
+  .post(authGuard, paymentsController.create);
 
 router
   .route('/:id')
-  .get(paymentsController.findOne)
-  .patch(paymentsController.update)
-  .delete(paymentsController.delete);
+  .get(authGuard, paymentsController.findOne)
+  .patch(authGuard, roleGuard('admin'), paymentsController.update)
+  .delete(authGuard, roleGuard('admin'), paymentsController.delete);
 
 export { router as paymentsRouter };
